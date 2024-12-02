@@ -1,0 +1,30 @@
+# Build stage
+FROM golang:1.23-alpine as build
+
+WORKDIR /app
+
+# Copy go.mod and go.sum to the build container
+COPY ./src/go.mod ./src/go.sum ./
+
+# Download Go module dependencies
+RUN go mod download
+
+# Copy the entire source code into the container
+COPY ./src /app/
+
+# Build the Go application
+RUN go build -o app .
+
+# Final stage
+FROM alpine:3.18
+
+# Create a directory for the app
+RUN mkdir -p /app
+
+# Copy the built app from the previous stage
+COPY --from=build /app/app /app/
+
+WORKDIR /app
+
+# Define the command to run the application
+CMD ["./app"]

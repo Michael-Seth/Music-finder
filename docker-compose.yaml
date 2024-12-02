@@ -1,0 +1,40 @@
+# version: "3"
+services:
+  music-storage:
+    container_name: music-storage
+    image: apache/couchdb:3
+    ports:
+      - "5984:5984"
+    environment:
+      - COUCHDB_USER=user
+      - COUCHDB_PASSWORD=password
+      - COUCHDB_INIT=true
+    volumes:
+      - ./components/music-storage/data:/opt/couchdb/data
+  music-queue:
+    container_name: music-queue
+    image: rabbitmq:4-management
+    ports:
+      - 8080:15672
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=password
+  music-request-api:
+    container_name: music-request-api
+    image: aimvector/music-request-api:0.0.1
+    build: ./components/music-request-api
+    volumes:
+      - ./components/music-request-api/config.json:/app/configs/config.json
+    environment:
+      - "ENVIRONMENT=DEBUG"
+    ports:
+      - 8081:8080
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      interval: 30s
+      retries: 3
+  # music-consumer:
+  #   image: aimvector/music-consumer:0.0.1
+  #   build: ./components/music-consumer
+  #   volumes:
+  #     - ./components/music-consumer/config.json:/app/configs/config.json

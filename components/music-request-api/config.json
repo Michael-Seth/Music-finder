@@ -1,0 +1,13 @@
+{
+    "Test":[
+        {
+            "Name": "Omo"
+        }
+    ],
+    "RabbitMq": {
+        "Host": "music-queue",
+        "Port": 5672,
+        "Username": "user",
+        "Password": "password"
+    }
+}
