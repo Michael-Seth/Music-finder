@@ -1,16 +1,20 @@
 # Build stage
-FROM golang:1.23-alpine as build
+FROM golang:1.23-alpine AS build
 
-WORKDIR /app
+# Install curl
+RUN apk add --no-cache curl
 
-# Copy go.mod and go.sum to the build container
+# Create the working directory
+WORKDIR /go/src/app
+
+# Copy go.mod and go.sum to the working directory
 COPY ./src/go.mod ./src/go.sum ./
 
 # Download Go module dependencies
 RUN go mod download
 
-# Copy the entire source code into the container
-COPY ./src /app/
+# Copy the entire source code into the working directory
+COPY ./src ./
 
 # Build the Go application
 RUN go build -o app .
@@ -22,7 +26,7 @@ FROM alpine:3.18
 RUN mkdir -p /app
 
 # Copy the built app from the previous stage
-COPY --from=build /app/app /app/
+COPY --from=build /go/src/app/app /app/
 
 WORKDIR /app
 

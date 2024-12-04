@@ -13,10 +13,9 @@ func SubmitRequest(writer http.ResponseWriter, request *http.Request, p httprout
 	fmt.Println("Submitting request to queue")
 
 	// Get the "query" parameter from the query string
-	query := request.URL.Query().Get("query")
-
+	query := p.ByName("query")
 	if query == "" {
-		http.Error(writer, "Expected 'query' parameter in URL", http.StatusBadRequest)
+		http.Error(writer, "Missing 'query' parameter in URL path", http.StatusBadRequest)
 		return errors.New("missing 'query' parameter")
 	}
 
